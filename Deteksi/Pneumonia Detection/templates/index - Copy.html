@@ -1,0 +1,104 @@
+<html>
+	<head>
+        <title>PNEUMONIA PREDICTION</title>
+        <style>
+            .button {
+              border: none;
+              color: white;
+              padding: 16px 32px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+              margin: 4px 2px;
+              transition-duration: 0.4s;
+              cursor: pointer;
+            }
+            
+            .button1 {
+              background-color: white; 
+              color: black; 
+              border: 2px solid #4CAF50;
+            }
+            
+            .button1:hover {
+              background-color: #4CAF50;
+              color: white;
+            }
+            
+            .button2 {
+              background-color: white; 
+              color: black; 
+              border: 2px solid #008CBA;
+            }
+            
+            .button2:hover {
+              background-color: #008CBA;
+              color: white;
+            }
+            
+            </style>
+	</head>
+
+	<body>
+
+        <h1 style="color: #5e9ca0;">Pneumonia Prediction using X-Ray Images</h1>
+        <table style=" width: 100%;">
+        <tbody>
+        <tr>
+        <td style="width: 200px;"><img id="selected-image"  src="{{url_for('static', filename='photos/img.jpg')}}" width="200" /></td> 
+        <td style=""><br />
+            <table>
+            <tr><td >
+                <input type="file" id="image-selector" aria-label="File browser example">
+            </tr></td>
+            <tr><td > 
+            <button id="predict-button" class="button button2" >Predict</button>
+            </tr></td>
+            </table>
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        <h2 style="color: #2e6c80;">Prediction result:</h2>
+        <p><span id="result">...</span></p>
+        <!--<h2 style="color: #2e6c80;">Prediction probability:</h2>
+                <p><span id="probability">...</span></p>--><hr />
+        <p style="text-align: center;"><strong>by Team 9</strong></p>
+        <p style="text-align: center;"><a style="text-decoration: none; color: black;" href="https://www.instagram.com/rianbel">Rian Belana</a> | <a style="text-decoration: none; color: black;" href="https://www.instagram.com/farrel.grady">Farrel G.</a> | <a style="text-decoration: none; color: black;" href="https://www.instagram.com/satriamjati">Satria Manggala Jati</a></p>
+
+	</body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+    let base64Image;
+    $("#image-selector").change(function() {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let dataURL = reader.result;
+            $('#selected-image').attr("src", dataURL);
+            base64Image = dataURL.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
+            console.log(base64Image);
+        }
+        reader.readAsDataURL($("#image-selector")[0].files[0]);
+        $("#result").text("");
+        $("#probability").text("");
+
+    });
+
+    $("#predict-button").click(function(){
+            let message = {
+            image: base64Image
+        }
+        console.log(message);
+        $.post("/predict", JSON.stringify(message), function(response){
+            $("#result").text(response.prediction.result);
+            $("#probability").text(response.prediction.accuracy.toFixed(2));
+            console.log(response);
+        });
+    });
+    
+</script>
+
+</html>
